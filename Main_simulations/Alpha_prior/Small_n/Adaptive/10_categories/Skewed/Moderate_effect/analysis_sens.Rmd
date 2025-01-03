@@ -1,0 +1,587 @@
+---
+title: "Analysis"
+output: html_document
+date: "2024"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Load the data 
+```{r}
+library(miceadds)
+data <- do.call(rbind,lapply(paste0("sim_performance",c(1:50),".Rdata"), load.Rdata2))
+
+attach(data)
+
+## Set divergent transitions to missing for PPO (and potentially LCPO)
+numdivones <- length(numdivergent_dirones[numdivergent_dirones!=0])
+numdivones 
+
+numdivzero <- length(numdivergent_dirzero[numdivergent_dirzero!=0])
+numdivzero 
+
+numdivjef <- length(numdivergent_dirjef[numdivergent_dirjef!=0])
+numdivjef 
+
+numdivrec <- length(numdivergent_dirrec[numdivergent_dirrec!=0])
+numdivrec 
+
+numdivnormal <- length(numdivergent_normal[numdivergent_normal!=0])
+numdivnormal 
+```
+
+## Check R-hats are all < 1.01 
+
+```{r}
+summary(rhat_dirones[numdivergent_dirones==0])
+
+summary(rhat_dirzero[numdivergent_dirzero==0])
+
+summary(rhat_dirjef[numdivergent_dirjef==0])
+
+summary(rhat_dirrec[numdivergent_dirrec==0])
+
+# normal  
+summary(rhat_normal[numdivergent_normal==0])
+
+```
+
+## Check bulk ESS are sufficiently large (minimum 400, ideally above 1000)
+```{r}
+
+summary(bulkess_dirones[numdivergent_dirones==0])
+
+summary(bulkess_dirzero[numdivergent_dirzero==0])
+
+summary(bulkess_dirjef[numdivergent_dirjef==0])
+
+summary(bulkess_dirrec[numdivergent_dirrec==0])
+
+# normal  
+summary(bulkess_normal[numdivergent_normal==0])
+
+```
+
+## Check tail ESS are sufficiently large (should be >400, ideally above 1000)
+```{r}
+
+summary(tailess_dirones[numdivergent_dirones==0])
+
+summary(tailess_dirzero[numdivergent_dirzero==0])
+
+summary(tailess_dirjef[numdivergent_dirjef==0])
+
+summary(tailess_dirrec[numdivergent_dirrec==0])
+
+# normal  
+summary(tailess_normal[numdivergent_normal==0])
+
+```
+
+
+## Check that the MCSE meets upper bound of 0.01 
+```{r}
+ 
+summary(mcse_dirones[numdivergent_dirones==0])
+
+summary(mcse_dirzero[numdivergent_dirzero==0])
+
+summary(mcse_dirjef[numdivergent_dirjef==0])
+
+summary(mcse_dirrec[numdivergent_dirrec==0])
+
+# normal  
+summary(mcse_normal[numdivergent_normal==0])
+
+```
+
+
+## Check number of divergent transitions - this should be kept to a minimum if any (<10)
+```{r}
+summary(numdivergent_dirones)
+
+summary(numdivergent_dirzero)
+
+summary(numdivergent_dirjef)
+
+summary(numdivergent_dirrec)
+
+# normal  
+summary(numdivergent_normal)
+
+```
+
+## Calculate performance measures 
+## Bias across each model 
+```{r}
+bias_dirone <- mean(bias_dirones[numdivergent_dirones==0])
+bias_dirzer <- mean(bias_dirzero[numdivergent_dirzero==0])
+bias_dirje <- mean(bias_dirjef[numdivergent_dirjef==0])
+bias_dirre <- mean(bias_dirrec[numdivergent_dirrec==0])
+bias_norm <- mean(bias_normal[numdivergent_normal==0])
+bias_frequentist <- mean(bias_freq)
+```
+
+## Relative bias across each model 
+```{r}
+relbias_dirone <- (exp(bias_dirone+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+relbias_dirzer <- (exp(bias_dirzer+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+relbias_dirje <- (exp(bias_dirje+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+relbias_dirre <- (exp(bias_dirre+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+relbias_normal <- (exp(bias_norm+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+relbias_frequentist <- (exp(bias_frequentist+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+```
+
+
+## Coverage across each model 
+```{r}
+coverage_dirone <- mean(coverage_dirones[numdivergent_dirones==0])
+coverage_dirzer <- mean(coverage_dirzero[numdivergent_dirzero==0])
+coverage_dirje <- mean(coverage_dirjef[numdivergent_dirjef==0])
+coverage_dirre <- mean(coverage_dirrec[numdivergent_dirrec==0])
+coverage_norm <- mean(coverage_normal[numdivergent_normal==0])
+coverage_frequentist <- mean(coverage_freq)
+```
+
+
+## MSE across each model and cumulative logit 
+```{r}
+mse_dirone <- mean(mse_dirones[numdivergent_dirones==0])
+mse_dirzer <- mean(mse_dirzero[numdivergent_dirzero==0])
+mse_dirje <- mean(mse_dirjef[numdivergent_dirjef==0])
+mse_dirre <- mean(mse_dirrec[numdivergent_dirrec==0])
+mse_norm <- mean(mse_normal[numdivergent_normal==0])
+mse_frequentist <- mean(mse_freq)
+```
+
+
+## Posterior probability of superiority 
+```{r}
+postprob_dirone <- mean(postprob_dirones[numdivergent_dirones==0])
+postprob_dirzer <- mean(postprob_dirzero[numdivergent_dirzero==0])
+postprob_dirje <- mean(postprob_dirjef[numdivergent_dirjef==0])
+postprob_dirre <- mean(postprob_dirrec[numdivergent_dirrec==0])
+postprob_norm <- mean(postprob_normal[numdivergent_normal==0])
+
+## Proportion that declare superiority 
+postsup_dirone <- mean(postprob_dirones[numdivergent_dirones==0] > 0.95)
+postsup_dirzer <- mean(postprob_dirzero[numdivergent_dirzero==0] > 0.95)
+postsup_dirje <- mean(postprob_dirjef[numdivergent_dirjef==0] > 0.95)
+postsup_dirre <- mean(postprob_dirrec[numdivergent_dirrec==0] > 0.95)
+postsup_norm <- mean(postprob_normal[numdivergent_normal==0] > 0.95)
+```
+
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - BIAS 
+## These should be <0.05, otherwise increase n_sim 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_bias_dirone <- nsim - numdivones
+MC_YMinusi_bias_dirzer <- nsim - numdivzero
+MC_YMinusi_bias_dirje <- nsim - numdivjef
+MC_YMinusi_bias_dirre <- nsim - numdivrec
+MC_YMinusi_bias_norm <- nsim - numdivnormal
+
+data$bias_dirones[numdivergent_dirones != 0] <- NA
+data$bias_dirzero[numdivergent_dirzero != 0] <- NA
+data$bias_dirjef[numdivergent_dirjef != 0] <- NA
+data$bias_dirrec[numdivergent_dirrec != 0] <- NA
+data$bias_normal[numdivergent_normal != 0] <- NA
+
+for(i in 1:(nsim-numdivones)){
+  MC_YMinusi_bias_dirone[i] = sum(bias_dirones[-i],na.rm=T)/(nsim-numdivones-1)
+}
+
+for(i in 1:(nsim-numdivzero)){
+  MC_YMinusi_bias_dirzer[i] = sum(bias_dirzero[-i],na.rm=T)/(nsim-numdivzero-1)
+}
+
+for(i in 1:(nsim-numdivjef)){
+  MC_YMinusi_bias_dirje[i] = sum(bias_dirjef[-i],na.rm=T)/(nsim-numdivjef-1)
+}
+
+for(i in 1:(nsim-numdivrec)){
+  MC_YMinusi_bias_dirre[i] = sum(bias_dirrec[-i],na.rm=T)/(nsim-numdivrec-1)
+}
+
+for(i in 1:(nsim-numdivnormal)){
+  MC_YMinusi_bias_norm[i] = sum(bias_normal[-i],na.rm=T)/(nsim-numdivnormal-1)
+}
+
+bar_MC_YMinusi_bias_dirone = sum(MC_YMinusi_bias_dirone,na.rm=T)/(nsim-numdivones)
+bar_MC_YMinusi_bias_dirzer = sum(MC_YMinusi_bias_dirzer,na.rm=T)/(nsim-numdivzero)
+bar_MC_YMinusi_bias_dirje = sum(MC_YMinusi_bias_dirje,na.rm=T)/(nsim-numdivjef)
+bar_MC_YMinusi_bias_dirre = sum(MC_YMinusi_bias_dirre,na.rm=T)/(nsim-numdivrec)
+bar_MC_YMinusi_bias_norm = sum(MC_YMinusi_bias_norm,na.rm=T)/(nsim-numdivnormal)
+
+MCE_JK_bias_dirone = sqrt(((nsim-numdivones-1)/(nsim-numdivones))*sum((MC_YMinusi_bias_dirone-bar_MC_YMinusi_bias_dirone)^2,na.rm=T))
+MCE_JK_bias_dirzer = sqrt(((nsim-numdivzero-1)/(nsim-numdivzero))*sum((MC_YMinusi_bias_dirzer-bar_MC_YMinusi_bias_dirzer)^2,na.rm=T))
+MCE_JK_bias_dirje = sqrt(((nsim-numdivjef-1)/(nsim-numdivjef))*sum((MC_YMinusi_bias_dirje-bar_MC_YMinusi_bias_dirje)^2,na.rm=T))
+MCE_JK_bias_dirre = sqrt(((nsim-numdivrec-1)/(nsim-numdivrec))*sum((MC_YMinusi_bias_dirre-bar_MC_YMinusi_bias_dirre)^2,na.rm=T))
+MCE_JK_bias_norm = sqrt(((nsim-numdivnormal-1)/(nsim-numdivnormal))*sum((MC_YMinusi_bias_norm-bar_MC_YMinusi_bias_norm)^2,na.rm=T))
+```
+
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation -  RELATIVE BIAS 
+## These should be <0.05, otherwise increase n_sim 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_relbias_dirone <- nsim - numdivones
+MC_YMinusi_relbias_dirzer <- nsim - numdivzero
+MC_YMinusi_relbias_dirje <- nsim - numdivjef
+MC_YMinusi_relbias_dirre <- nsim - numdivrec
+MC_YMinusi_relbias_norm <- nsim - numdivnormal
+
+data$bias_dirones[numdivergent_dirones != 0] <- NA
+data$bias_dirzero[numdivergent_dirzero != 0] <- NA
+data$bias_dirjef[numdivergent_dirjef != 0] <- NA
+data$bias_dirrec[numdivergent_dirrec != 0] <- NA
+data$bias_normal[numdivergent_normal != 0] <- NA
+
+
+for(i in 1:(nsim-numdivones)){
+  MC_YMinusi_relbias_dirone[i] = (exp(sum(bias_dirones[-i],na.rm=T)/(nsim-numdivones-1)+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+}
+
+for(i in 1:(nsim-numdivzero)){
+  MC_YMinusi_relbias_dirzer[i] = (exp(sum(bias_dirzero[-i],na.rm=T)/(nsim-numdivzero-1)+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+}
+
+for(i in 1:(nsim-numdivjef)){
+  MC_YMinusi_relbias_dirje[i] = (exp(sum(bias_dirjef[-i],na.rm=T)/(nsim-numdivjef-1)+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+}
+
+for(i in 1:(nsim-numdivrec)){
+  MC_YMinusi_relbias_dirre[i] = (exp(sum(bias_dirrec[-i],na.rm=T)/(nsim-numdivrec-1)+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+}
+
+for(i in 1:(nsim-numdivnormal)){
+  MC_YMinusi_relbias_norm[i] = (exp(sum(bias_normal[-i],na.rm=T)/(nsim-numdivnormal-1)+ log(1.50))-exp(log(1.50)))/(exp(log(1.50)))
+}
+
+
+bar_MC_YMinusi_relbias_dirone = sum(MC_YMinusi_relbias_dirone,na.rm=T)/(nsim-numdivones)
+bar_MC_YMinusi_relbias_dirzer = sum(MC_YMinusi_relbias_dirzer,na.rm=T)/(nsim-numdivzero)
+bar_MC_YMinusi_relbias_dirje = sum(MC_YMinusi_relbias_dirje,na.rm=T)/(nsim-numdivjef)
+bar_MC_YMinusi_relbias_dirre = sum(MC_YMinusi_relbias_dirre,na.rm=T)/(nsim-numdivrec)
+bar_MC_YMinusi_relbias_norm = sum(MC_YMinusi_relbias_norm,na.rm=T)/(nsim-numdivnormal)
+
+MCE_JK_relbias_dirone = sqrt(((nsim-numdivones-1)/(nsim-numdivones))*sum((MC_YMinusi_relbias_dirone-bar_MC_YMinusi_relbias_dirone)^2,na.rm=T))
+MCE_JK_relbias_dirzer = sqrt(((nsim-numdivzero-1)/(nsim-numdivzero))*sum((MC_YMinusi_relbias_dirzer-bar_MC_YMinusi_relbias_dirzer)^2,na.rm=T))
+MCE_JK_relbias_dirje = sqrt(((nsim-numdivjef-1)/(nsim-numdivjef))*sum((MC_YMinusi_relbias_dirje-bar_MC_YMinusi_relbias_dirje)^2,na.rm=T))
+MCE_JK_relbias_dirre = sqrt(((nsim-numdivrec-1)/(nsim-numdivrec))*sum((MC_YMinusi_relbias_dirre-bar_MC_YMinusi_relbias_dirre)^2,na.rm=T))
+MCE_JK_relbias_norm = sqrt(((nsim-numdivnormal-1)/(nsim-numdivnormal))*sum((MC_YMinusi_relbias_norm-bar_MC_YMinusi_relbias_norm)^2,na.rm=T))
+```
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - COVERAGE 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_cv_dirone <- nsim - numdivones
+MC_YMinusi_cv_dirzer <- nsim - numdivzero
+MC_YMinusi_cv_dirje <- nsim - numdivjef
+MC_YMinusi_cv_dirre <- nsim - numdivrec
+MC_YMinusi_cv_norm <- nsim - numdivnormal
+
+data$coverage_dirones[numdivergent_dirones != 0] <- NA
+data$coverage_dirzero[numdivergent_dirzero != 0] <- NA
+data$coverage_dirjef[numdivergent_dirjef != 0] <- NA
+data$coverage_dirrec[numdivergent_dirrec != 0] <- NA
+data$coverage_normal[numdivergent_normal != 0] <- NA
+
+
+for(i in 1:(nsim-numdivones)){
+  MC_YMinusi_cv_dirone[i] = sum(coverage_dirones[-i],na.rm=T)/(nsim-numdivones-1)
+}
+
+for(i in 1:(nsim-numdivzero)){
+  MC_YMinusi_cv_dirzer[i] = sum(coverage_dirzero[-i],na.rm=T)/(nsim-numdivzero-1)
+}
+
+for(i in 1:(nsim-numdivjef)){
+  MC_YMinusi_cv_dirje[i] = sum(coverage_dirjef[-i],na.rm=T)/(nsim-numdivjef-1)
+}
+
+for(i in 1:(nsim-numdivrec)){
+  MC_YMinusi_cv_dirre[i] = sum(coverage_dirrec[-i],na.rm=T)/(nsim-numdivrec-1)
+}
+
+for(i in 1:(nsim-numdivnormal)){
+  MC_YMinusi_cv_norm[i] = sum(coverage_normal[-i],na.rm=T)/(nsim-numdivnormal-1)
+}
+
+
+bar_MC_YMinusi_cv_dirone = sum(MC_YMinusi_cv_dirone,na.rm=T)/(nsim-numdivones)
+bar_MC_YMinusi_cv_dirzer = sum(MC_YMinusi_cv_dirzer,na.rm=T)/(nsim-numdivzero)
+bar_MC_YMinusi_cv_dirje = sum(MC_YMinusi_cv_dirje,na.rm=T)/(nsim-numdivjef)
+bar_MC_YMinusi_cv_dirre = sum(MC_YMinusi_cv_dirre,na.rm=T)/(nsim-numdivrec)
+bar_MC_YMinusi_cv_norm = sum(MC_YMinusi_cv_norm,na.rm=T)/(nsim-numdivnormal)
+
+MCE_JK_cv_dirone = sqrt(((nsim-numdivones-1)/(nsim-numdivones))*sum((MC_YMinusi_cv_dirone-bar_MC_YMinusi_cv_dirone)^2,na.rm=T))
+MCE_JK_cv_dirzer = sqrt(((nsim-numdivzero-1)/(nsim-numdivzero))*sum((MC_YMinusi_cv_dirzer-bar_MC_YMinusi_cv_dirzer)^2,na.rm=T))
+MCE_JK_cv_dirje = sqrt(((nsim-numdivjef-1)/(nsim-numdivjef))*sum((MC_YMinusi_cv_dirje-bar_MC_YMinusi_cv_dirje)^2,na.rm=T))
+MCE_JK_cv_dirre = sqrt(((nsim-numdivrec-1)/(nsim-numdivrec))*sum((MC_YMinusi_cv_dirre-bar_MC_YMinusi_cv_dirre)^2,na.rm=T))
+MCE_JK_cv_norm = sqrt(((nsim-numdivnormal-1)/(nsim-numdivnormal))*sum((MC_YMinusi_cv_norm-bar_MC_YMinusi_cv_norm)^2,na.rm=T))
+```
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - MSE 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_mse_dirone <- nsim - numdivones
+MC_YMinusi_mse_dirzer <- nsim - numdivzero
+MC_YMinusi_mse_dirje <- nsim - numdivjef
+MC_YMinusi_mse_dirre <- nsim - numdivrec
+MC_YMinusi_mse_norm <- nsim - numdivnormal
+
+data$mse_dirones[numdivergent_dirones != 0] <- NA
+data$mse_dirzero[numdivergent_dirzero != 0] <- NA
+data$mse_dirjef[numdivergent_dirjef != 0] <- NA
+data$mse_dirrec[numdivergent_dirrec != 0] <- NA
+data$mse_normal[numdivergent_normal != 0] <- NA
+
+
+for(i in 1:(nsim-numdivones)){
+  MC_YMinusi_mse_dirone[i] = sum(mse_dirones[-i],na.rm=T)/(nsim-numdivones-1)
+}
+
+
+for(i in 1:(nsim-numdivzero)){
+  MC_YMinusi_mse_dirzer[i] = sum(mse_dirzero[-i],na.rm=T)/(nsim-numdivzero-1)
+}
+
+for(i in 1:(nsim-numdivjef)){
+  MC_YMinusi_mse_dirje[i] = sum(mse_dirjef[-i],na.rm=T)/(nsim-numdivjef-1)
+}
+
+for(i in 1:(nsim-numdivrec)){
+  MC_YMinusi_mse_dirre[i] = sum(mse_dirrec[-i],na.rm=T)/(nsim-numdivrec-1)
+}
+
+for(i in 1:(nsim-numdivnormal)){
+  MC_YMinusi_mse_norm[i] = sum(mse_normal[-i],na.rm=T)/(nsim-numdivnormal-1)
+}
+
+bar_MC_YMinusi_mse_dirone = sum(MC_YMinusi_mse_dirone,na.rm=T)/(nsim-numdivones)
+bar_MC_YMinusi_mse_dirzer = sum(MC_YMinusi_mse_dirzer,na.rm=T)/(nsim-numdivzero)
+bar_MC_YMinusi_mse_dirje = sum(MC_YMinusi_mse_dirje,na.rm=T)/(nsim-numdivjef)
+bar_MC_YMinusi_mse_dirre = sum(MC_YMinusi_mse_dirre,na.rm=T)/(nsim-numdivrec)
+bar_MC_YMinusi_mse_norm = sum(MC_YMinusi_mse_norm,na.rm=T)/(nsim-numdivnormal)
+
+MCE_JK_mse_dirone = sqrt(((nsim-numdivones-1)/(nsim-numdivones))*sum((MC_YMinusi_mse_dirone-bar_MC_YMinusi_mse_dirone)^2,na.rm=T))
+MCE_JK_mse_dirzer = sqrt(((nsim-numdivzero-1)/(nsim-numdivzero))*sum((MC_YMinusi_mse_dirzer-bar_MC_YMinusi_mse_dirzer)^2,na.rm=T))
+MCE_JK_mse_dirje = sqrt(((nsim-numdivjef-1)/(nsim-numdivjef))*sum((MC_YMinusi_mse_dirje-bar_MC_YMinusi_mse_dirje)^2,na.rm=T))
+MCE_JK_mse_dirre = sqrt(((nsim-numdivrec-1)/(nsim-numdivrec))*sum((MC_YMinusi_mse_dirre-bar_MC_YMinusi_mse_dirre)^2,na.rm=T))
+MCE_JK_mse_norm = sqrt(((nsim-numdivnormal-1)/(nsim-numdivnormal))*sum((MC_YMinusi_mse_norm-bar_MC_YMinusi_mse_norm)^2,na.rm=T))
+```
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - posterior probability 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_postprob_dirone <- nsim - numdivones
+MC_YMinusi_postprob_dirzer <- nsim - numdivzero
+MC_YMinusi_postprob_dirje <- nsim - numdivjef
+MC_YMinusi_postprob_dirre <- nsim - numdivrec
+MC_YMinusi_postprob_norm <- nsim - numdivnormal
+
+data$postprob_dirones[numdivergent_dirones != 0] <- NA
+data$postprob_dirzero[numdivergent_dirzero != 0] <- NA
+data$postprob_dirjef[numdivergent_dirjef != 0] <- NA
+data$postprob_dirrec[numdivergent_dirrec != 0] <- NA
+data$postprob_normal[numdivergent_normal != 0] <- NA
+
+
+for(i in 1:(nsim-numdivones)){
+  MC_YMinusi_postprob_dirone[i] = sum(postprob_dirones[-i],na.rm=T)/(nsim-numdivones-1)
+}
+
+
+for(i in 1:(nsim-numdivzero)){
+  MC_YMinusi_postprob_dirzer[i] = sum(postprob_dirzero[-i],na.rm=T)/(nsim-numdivzero-1)
+}
+
+for(i in 1:(nsim-numdivjef)){
+  MC_YMinusi_postprob_dirje[i] = sum(postprob_dirjef[-i],na.rm=T)/(nsim-numdivjef-1)
+}
+
+for(i in 1:(nsim-numdivrec)){
+  MC_YMinusi_postprob_dirre[i] = sum(postprob_dirrec[-i],na.rm=T)/(nsim-numdivrec-1)
+}
+
+for(i in 1:(nsim-numdivnormal)){
+  MC_YMinusi_postprob_norm[i] = sum(postprob_normal[-i],na.rm=T)/(nsim-numdivnormal-1)
+}
+
+
+bar_MC_YMinusi_postprob_dirone = sum(MC_YMinusi_postprob_dirone,na.rm=T)/(nsim-numdivones)
+bar_MC_YMinusi_postprob_dirzer = sum(MC_YMinusi_postprob_dirzer,na.rm=T)/(nsim-numdivzero)
+bar_MC_YMinusi_postprob_dirje = sum(MC_YMinusi_postprob_dirje,na.rm=T)/(nsim-numdivjef)
+bar_MC_YMinusi_postprob_dirre = sum(MC_YMinusi_postprob_dirre,na.rm=T)/(nsim-numdivrec)
+bar_MC_YMinusi_postprob_norm = sum(MC_YMinusi_postprob_norm,na.rm=T)/(nsim-numdivnormal)
+
+MCE_JK_postprob_dirone = sqrt(((nsim-numdivones-1)/(nsim-numdivones))*sum((MC_YMinusi_postprob_dirone-bar_MC_YMinusi_postprob_dirone)^2,na.rm=T))
+MCE_JK_postprob_dirzer = sqrt(((nsim-numdivzero-1)/(nsim-numdivzero))*sum((MC_YMinusi_postprob_dirzer-bar_MC_YMinusi_postprob_dirzer)^2,na.rm=T))
+MCE_JK_postprob_dirje = sqrt(((nsim-numdivjef-1)/(nsim-numdivjef))*sum((MC_YMinusi_postprob_dirje-bar_MC_YMinusi_postprob_dirje)^2,na.rm=T))
+MCE_JK_postprob_dirre = sqrt(((nsim-numdivrec-1)/(nsim-numdivrec))*sum((MC_YMinusi_postprob_dirre-bar_MC_YMinusi_postprob_dirre)^2,na.rm=T))
+MCE_JK_postprob_norm = sqrt(((nsim-numdivnormal-1)/(nsim-numdivnormal))*sum((MC_YMinusi_postprob_norm-bar_MC_YMinusi_postprob_norm)^2,na.rm=T))
+```
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - proportion declaring superiority 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_postsup_dirone <- nsim - numdivones
+MC_YMinusi_postsup_dirzer <- nsim - numdivzero
+MC_YMinusi_postsup_dirje <- nsim - numdivjef
+MC_YMinusi_postsup_dirre <- nsim - numdivrec
+MC_YMinusi_postsup_norm <- nsim - numdivnormal
+
+data$postprob_dirones[numdivergent_dirones != 0] <- NA
+data$postprob_dirzero[numdivergent_dirzero != 0] <- NA
+data$postprob_dirjef[numdivergent_dirjef != 0] <- NA
+data$postprob_dirrec[numdivergent_dirrec != 0] <- NA
+data$postprob_normal[numdivergent_normal != 0] <- NA
+
+
+for(i in 1:(nsim-numdivones)){
+  MC_YMinusi_postsup_dirone[i] = sum(postprob_dirones[-i] > 0.95,na.rm=T)/(nsim-numdivones-1)
+}
+
+
+for(i in 1:(nsim-numdivzero)){
+  MC_YMinusi_postsup_dirzer[i] = sum(postprob_dirzero[-i] > 0.95,na.rm=T)/(nsim-numdivzero-1)
+}
+
+for(i in 1:(nsim-numdivjef)){
+  MC_YMinusi_postsup_dirje[i] = sum(postprob_dirjef[-i]> 0.95,na.rm=T)/(nsim-numdivjef-1)
+}
+
+for(i in 1:(nsim-numdivrec)){
+  MC_YMinusi_postsup_dirre[i] = sum(postprob_dirrec[-i]> 0.95,na.rm=T)/(nsim-numdivrec-1)
+}
+
+for(i in 1:(nsim-numdivnormal)){
+  MC_YMinusi_postsup_norm[i] = sum(postprob_normal[-i]> 0.95,na.rm=T)/(nsim-numdivnormal-1)
+}
+
+
+bar_MC_YMinusi_postsup_dirone = sum(MC_YMinusi_postsup_dirone,na.rm=T)/(nsim-numdivones)
+bar_MC_YMinusi_postsup_dirzer = sum(MC_YMinusi_postsup_dirzer,na.rm=T)/(nsim-numdivzero)
+bar_MC_YMinusi_postsup_dirje = sum(MC_YMinusi_postsup_dirje,na.rm=T)/(nsim-numdivjef)
+bar_MC_YMinusi_postsup_dirre = sum(MC_YMinusi_postsup_dirre,na.rm=T)/(nsim-numdivrec)
+bar_MC_YMinusi_postsup_norm = sum(MC_YMinusi_postsup_norm,na.rm=T)/(nsim-numdivnormal)
+
+MCE_JK_postsup_dirone = sqrt(((nsim-numdivones-1)/(nsim-numdivones))*sum((MC_YMinusi_postsup_dirone-bar_MC_YMinusi_postsup_dirone)^2,na.rm=T))
+MCE_JK_postsup_dirzer = sqrt(((nsim-numdivzero-1)/(nsim-numdivzero))*sum((MC_YMinusi_postsup_dirzer-bar_MC_YMinusi_postsup_dirzer)^2,na.rm=T))
+MCE_JK_postsup_dirje = sqrt(((nsim-numdivjef-1)/(nsim-numdivjef))*sum((MC_YMinusi_postsup_dirje-bar_MC_YMinusi_postsup_dirje)^2,na.rm=T))
+MCE_JK_postsup_dirre = sqrt(((nsim-numdivrec-1)/(nsim-numdivrec))*sum((MC_YMinusi_postsup_dirre-bar_MC_YMinusi_postsup_dirre)^2,na.rm=T))
+MCE_JK_postsup_norm = sqrt(((nsim-numdivnormal-1)/(nsim-numdivnormal))*sum((MC_YMinusi_postsup_norm-bar_MC_YMinusi_postsup_norm)^2,na.rm=T))
+```
+
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - proportion stopping early 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_stopearly_dirone <- nsim - numdivones
+MC_YMinusi_stopearly_dirzer <- nsim - numdivzero
+MC_YMinusi_stopearly_dirje <- nsim - numdivjef
+MC_YMinusi_stopearly_dirre <- nsim - numdivrec
+MC_YMinusi_stopearly_norm <- nsim - numdivnormal
+
+data$stopping_dirones[numdivergent_dirones != 0] <- NA
+data$stopping_dirzero[numdivergent_dirzero != 0] <- NA
+data$stopping_dirjef[numdivergent_dirjef != 0] <- NA
+data$stopping_dirrec[numdivergent_dirrec != 0] <- NA
+data$stopping_normal[numdivergent_normal != 0] <- NA
+
+for(i in 1:(nsim-numdivones)){
+  MC_YMinusi_stopearly_dirone[i] = sum(stopping_dirones[-i],na.rm=T)/(nsim-numdivones-1)
+}
+
+
+for(i in 1:(nsim-numdivzero)){
+  MC_YMinusi_stopearly_dirzer[i] = sum(stopping_dirzero[-i],na.rm=T)/(nsim-numdivzero-1)
+}
+
+for(i in 1:(nsim-numdivjef)){
+  MC_YMinusi_stopearly_dirje[i] = sum(stopping_dirjef[-i],na.rm=T)/(nsim-numdivjef-1)
+}
+
+for(i in 1:(nsim-numdivrec)){
+  MC_YMinusi_stopearly_dirre[i] = sum(stopping_dirrec[-i],na.rm=T)/(nsim-numdivrec-1)
+}
+
+for(i in 1:(nsim-numdivnormal)){
+  MC_YMinusi_stopearly_norm[i] = sum(stopping_normal[-i],na.rm=T)/(nsim-numdivnormal-1)
+}
+
+bar_MC_YMinusi_stopearly_dirone = sum(MC_YMinusi_stopearly_dirone,na.rm=T)/(nsim-numdivones)
+bar_MC_YMinusi_stopearly_dirzer = sum(MC_YMinusi_stopearly_dirzer,na.rm=T)/(nsim-numdivzero)
+bar_MC_YMinusi_stopearly_dirje = sum(MC_YMinusi_stopearly_dirje,na.rm=T)/(nsim-numdivjef)
+bar_MC_YMinusi_stopearly_dirre = sum(MC_YMinusi_stopearly_dirre,na.rm=T)/(nsim-numdivrec)
+bar_MC_YMinusi_stopearly_norm = sum(MC_YMinusi_stopearly_norm,na.rm=T)/(nsim-numdivnormal)
+
+MCE_JK_stopearly_dirone = sqrt(((nsim-numdivones-1)/(nsim-numdivones))*sum((MC_YMinusi_stopearly_dirone-bar_MC_YMinusi_stopearly_dirone)^2,na.rm=T))
+MCE_JK_stopearly_dirzer = sqrt(((nsim-numdivzero-1)/(nsim-numdivzero))*sum((MC_YMinusi_stopearly_dirzer-bar_MC_YMinusi_stopearly_dirzer)^2,na.rm=T))
+MCE_JK_stopearly_dirje = sqrt(((nsim-numdivjef-1)/(nsim-numdivjef))*sum((MC_YMinusi_stopearly_dirje-bar_MC_YMinusi_stopearly_dirje)^2,na.rm=T))
+MCE_JK_stopearly_dirre = sqrt(((nsim-numdivrec-1)/(nsim-numdivrec))*sum((MC_YMinusi_stopearly_dirre-bar_MC_YMinusi_stopearly_dirre)^2,na.rm=T))
+MCE_JK_stopearly_norm = sqrt(((nsim-numdivnormal-1)/(nsim-numdivnormal))*sum((MC_YMinusi_stopearly_norm-bar_MC_YMinusi_stopearly_norm)^2,na.rm=T))
+
+stopearly_se <- c(MCE_JK_stopearly_dirone,MCE_JK_stopearly_dirzer,MCE_JK_stopearly_dirje,MCE_JK_stopearly_dirre,MCE_JK_stopearly_norm,NA)
+```
+
+
+## Generate data frame - bias, SE, coverage, SE, MSE, SE, rel bias, SE, post prob, SE, post sup, SE, model prior, etc
+```{r}
+bias <- c(bias_dirone, bias_dirzer, bias_dirje, bias_dirre, bias_norm, bias_frequentist)
+
+bias_se <- c(MCE_JK_bias_dirone, MCE_JK_bias_dirzer, MCE_JK_bias_dirje, MCE_JK_bias_dirre, MCE_JK_bias_norm, NA)
+
+relbias <- c(relbias_dirone, relbias_dirzer, relbias_dirje, relbias_dirre, relbias_normal, relbias_frequentist)
+
+relbias_se <- c(MCE_JK_relbias_dirone, MCE_JK_relbias_dirzer, MCE_JK_relbias_dirje, MCE_JK_relbias_dirre, MCE_JK_relbias_norm, NA)
+
+coverage <- c(coverage_dirone, coverage_dirzer, coverage_dirje, coverage_dirre, coverage_norm, coverage_frequentist)
+
+coverage_se <- c(MCE_JK_cv_dirone, MCE_JK_cv_dirzer, MCE_JK_cv_dirje, MCE_JK_cv_dirre, MCE_JK_cv_norm, NA)
+
+mse <- c(mse_dirone, mse_dirzer, mse_dirje, mse_dirre, mse_norm, mse_frequentist)
+
+mse_se <- c(MCE_JK_mse_dirone, MCE_JK_mse_dirzer, MCE_JK_mse_dirje, MCE_JK_mse_dirre, MCE_JK_mse_norm, NA)
+
+postprob <- c(postprob_dirone, postprob_dirzer, postprob_dirje, postprob_dirre, postprob_norm, NA)
+
+postprob_se <- c(MCE_JK_postprob_dirone, MCE_JK_postprob_dirzer, MCE_JK_postprob_dirje, MCE_JK_postprob_dirre, MCE_JK_postprob_norm, NA)
+
+postsup <- c(postsup_dirone, postsup_dirzer, postsup_dirje, postsup_dirre, postsup_norm, NA)
+
+postsup_se <- c(MCE_JK_postsup_dirone, MCE_JK_postsup_dirzer, MCE_JK_postsup_dirje, MCE_JK_postsup_dirre, MCE_JK_postsup_norm, NA)
+
+model <- c(rep("Dirichlet (1)",1),rep("Dirichlet (0)",1),rep("Dirichlet (0.5)",1),rep("Dirichlet (1/J)",1), rep("Normal",1), rep("Frequentist",1))
+
+stopping <- c(mean(stopping_dirones[numdivergent_dirones == 0]), mean(stopping_dirzero[numdivergent_dirzero == 0]), mean(stopping_dirjef[numdivergent_dirjef == 0]), mean(stopping_dirrec[numdivergent_dirrec == 0]), mean(stopping_normal[numdivergent_normal == 0]), mean(stopping_freq))
+
+category <- rep(10,6)
+
+effectsize <- rep("Moderate [OR = 1.50]", 6)
+
+controlprob <- rep("Skewed", 6)
+
+sampsize <- rep(100, 6)
+
+design <- rep("Adaptive", 6)
+
+prior <- rep("Alpha", 6)
+
+results <- data.frame(bias = bias, bias_se = bias_se, relbias = relbias, relbias_se = relbias_se, coverage = coverage, coverage_se = coverage_se, mse = mse, mse_se = mse_se, postprob = postprob, postprob_se = postprob_se, postsup = postsup, postsup_se = postsup_se, model = model, category = category, effectsize = effectsize, controlprob = controlprob, sampsize = sampsize, design = design, prior = prior, stopping = stopping, stopping_se = stopearly_se)
+
+save(results, file = "results.Rdata")
+write.csv(results,file="G:/BACKUP/Chris/Project_3/Main_Simulations/Results/results_127_sens.csv")
+```
