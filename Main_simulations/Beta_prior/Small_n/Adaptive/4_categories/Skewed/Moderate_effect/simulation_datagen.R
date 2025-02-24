@@ -1,5 +1,5 @@
 ## Set working directory 
-setwd("G:/BACKUP/Chris/Project_3/Main_simulations/Beta_prior/Small_n/Adaptive/4_categories/Skewed/Moderate_effect")
+setwd("G:/BACKUP/Chris/Project_3/noninfo_pomodel/Main_simulations/Beta_prior/Small_n/Adaptive/4_categories/Skewed/Moderate_effect")
 
 # For simplicity assume fixed design, n = 50, OR = 1.50, J = 4, skewed probs
 ## Main simulation scenario 

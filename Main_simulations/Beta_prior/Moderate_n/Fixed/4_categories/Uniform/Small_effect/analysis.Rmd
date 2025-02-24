@@ -1,0 +1,432 @@
+---
+title: "Analysis"
+output: html_document
+date: "2024"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Load the data 
+```{r}
+library(miceadds)
+data <- do.call(rbind,lapply(paste0("sim_performance",c(1:50),".Rdata"), load.Rdata2))
+
+attach(data)
+```
+
+## Check R-hats are all < 1.01 
+
+```{r}
+# R square prior 
+summary(rhat_rsquare)
+
+# Normal large SD prior  
+summary(rhat_normal_largesd)
+
+# Normal small SD prior 
+summary(rhat_normal_smallsd)
+
+# Laplace large SD prior 
+summary(rhat_laplace_largesd)
+
+# Laplace small SD prior 
+summary(rhat_laplace_smallsd)
+
+# Cauchy  
+summary(rhat_cauchy)
+
+```
+
+## Check bulk ESS are sufficiently large (minimum 400, ideally above 1000)
+```{r}
+# R square prior 
+summary(bulkess_rsquare)
+
+# Normal large SD prior  
+summary(bulkess_normal_largesd)
+
+# Normal small SD prior 
+summary(bulkess_normal_smallsd)
+
+# Laplace large SD prior 
+summary(bulkess_laplace_largesd)
+
+# Laplace small SD prior 
+summary(bulkess_laplace_smallsd)
+
+# Cauchy  
+summary(bulkess_cauchy)
+
+```
+
+## Check tail ESS are sufficiently large (should be >400, ideally above 1000)
+```{r}
+# R square prior 
+summary(tailess_rsquare)
+
+# Normal large SD prior  
+summary(tailess_normal_largesd)
+
+# Normal small SD prior 
+summary(tailess_normal_smallsd)
+
+# Laplace large SD prior 
+summary(tailess_laplace_largesd)
+
+# Laplace small SD prior 
+summary(tailess_laplace_smallsd)
+
+# Cauchy  
+summary(tailess_cauchy)
+
+```
+
+
+## Check that the MCSE meets upper bound of 0.01 
+```{r}
+# R square prior 
+summary(mcse_rsquare)
+
+# Normal large SD prior  
+summary(mcse_normal_largesd)
+
+# Normal small SD prior 
+summary(mcse_normal_smallsd)
+
+# Laplace large SD prior 
+summary(mcse_laplace_largesd)
+
+# Laplace small SD prior 
+summary(mcse_laplace_smallsd)
+
+# Cauchy  
+summary(mcse_cauchy)
+
+```
+
+
+## Check number of divergent transitions - this should be kept to a minimum if any (<10)
+```{r}
+
+# Normal large SD prior  
+summary(numdivergent_normal_largesd)
+
+# Normal small SD prior 
+summary(numdivergent_normal_smallsd)
+
+# Laplace large SD prior 
+summary(numdivergent_laplace_largesd)
+
+# Laplace small SD prior 
+summary(numdivergent_laplace_smallsd)
+
+# Cauchy  
+summary(numdivergent_cauchy)
+
+```
+
+## Calculate performance measures 
+## Bias across each model 
+```{r}
+bias_rsq <- mean(bias_rsquare)
+bias_normlargesd <- mean(bias_normal_largesd)
+bias_normsmallsd <- mean(bias_normal_smallsd)
+bias_laplargesd <- mean(bias_laplace_largesd)
+bias_lapsmallsd <- mean(bias_laplace_smallsd)
+bias_cauch <- mean(bias_cauchy)
+bias_frequentist <- mean(bias_freq)
+```
+
+## Relative bias across each model 
+```{r}
+relbias_rsq <- (exp(bias_rsq + log(1.10))-exp(log(1.10)))/(exp(log(1.10)))
+relbias_normlargesd <- (exp(bias_normlargesd+ log(1.10))-exp(log(1.10)))/(exp(log(1.10)))
+relbias_normsmallsd <- (exp(bias_normsmallsd+ log(1.10))-exp(log(1.10)))/(exp(log(1.10)))
+relbias_laplargesd <- (exp(bias_laplargesd+ log(1.10))-exp(log(1.10)))/(exp(log(1.10)))
+relbias_lapsmallsd <- (exp(bias_lapsmallsd+ log(1.10))-exp(log(1.10)))/(exp(log(1.10)))
+relbias_cauchy <- (exp(bias_cauch+ log(1.10))-exp(log(1.10)))/(exp(log(1.10)))
+relbias_frequentist <- (exp(bias_frequentist+ log(1.10))-exp(log(1.10)))/(exp(log(1.10)))
+```
+
+
+## Coverage across each model 
+```{r}
+coverage_rsq <- mean(coverage_rsquare)
+coverage_normlargesd <- mean(coverage_normal_largesd)
+coverage_normsmallsd <- mean(coverage_normal_smallsd)
+coverage_laplargesd <- mean(coverage_laplace_largesd)
+coverage_lapsmallsd <- mean(coverage_laplace_smallsd)
+coverage_cauch <- mean(coverage_cauchy)
+coverage_frequentist <- mean(coverage_freq)
+```
+
+
+## MSE across each model and cumulative logit 
+```{r}
+mse_rsq <- mean(mse_rsquare)
+mse_normlargesd <- mean(mse_normal_largesd)
+mse_normsmallsd <- mean(mse_normal_smallsd)
+mse_laplargesd <- mean(mse_laplace_largesd)
+mse_lapsmallsd <- mean(mse_laplace_smallsd)
+mse_cauch <- mean(mse_cauchy)
+mse_frequentist <- mean(mse_freq)
+```
+
+
+## Posterior probability of superiority 
+```{r}
+postprob_rsq <- mean(postprob_rsquare)
+postprob_normlargesd <- mean(postprob_normal_largesd)
+postprob_normsmallsd <- mean(postprob_normal_smallsd)
+postprob_laplargesd <- mean(postprob_laplace_largesd)
+postprob_lapsmallsd <- mean(postprob_laplace_smallsd)
+postprob_cauch <- mean(postprob_cauchy)
+
+## Proportion that declare superiority 
+postsup_rsq <- mean(postprob_rsquare > 0.95)
+postsup_normlargesd <- mean(postprob_normal_largesd > 0.95)
+postsup_normsmallsd <- mean(postprob_normal_smallsd > 0.95)
+postsup_laplargesd <- mean(postprob_laplace_largesd > 0.95)
+postsup_lapsmallsd <- mean(postprob_laplace_smallsd > 0.95)
+postsup_cauch <- mean(postprob_cauchy > 0.95)
+```
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - BIAS 
+## These should be <0.05, otherwise increase n_sim 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_bias_rsquare <- MC_YMinusi_bias_normlargesd <- MC_YMinusi_bias_normsmallsd <- MC_YMinusi_bias_laplargesd <- MC_YMinusi_bias_lapsmallsd <- MC_YMinusi_bias_cauch <- numeric(nsim)
+
+for(i in 1:nsim){
+  MC_YMinusi_bias_rsquare[i] = sum(bias_rsquare[-i])/(nsim-1)
+  MC_YMinusi_bias_normlargesd[i] = sum(bias_normal_largesd[-i])/(nsim-1)
+  MC_YMinusi_bias_normsmallsd[i] = sum(bias_normal_smallsd[-i])/(nsim-1)
+  MC_YMinusi_bias_laplargesd[i] = sum(bias_laplace_largesd[-i])/(nsim-1)
+  MC_YMinusi_bias_lapsmallsd[i] = sum(bias_laplace_smallsd[-i])/(nsim-1)
+  MC_YMinusi_bias_cauch[i] = sum(bias_cauchy[-i])/(nsim-1)
+}
+
+bar_MC_YMinusi_bias_rsquare = sum(MC_YMinusi_bias_rsquare)/nsim
+bar_MC_YMinusi_bias_normlargesd = sum(MC_YMinusi_bias_normlargesd)/nsim
+bar_MC_YMinusi_bias_normsmallsd = sum(MC_YMinusi_bias_normsmallsd)/nsim
+bar_MC_YMinusi_bias_laplargesd = sum(MC_YMinusi_bias_laplargesd)/nsim
+bar_MC_YMinusi_bias_lapsmallsd = sum(MC_YMinusi_bias_lapsmallsd)/nsim
+bar_MC_YMinusi_bias_cauch = sum(MC_YMinusi_bias_cauch)/nsim
+
+MCE_JK_bias_rsquare = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_bias_rsquare-bar_MC_YMinusi_bias_rsquare)^2))
+MCE_JK_bias_normlargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_bias_normlargesd-bar_MC_YMinusi_bias_normlargesd)^2))
+MCE_JK_bias_normsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_bias_normsmallsd-bar_MC_YMinusi_bias_normsmallsd)^2))
+MCE_JK_bias_laplargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_bias_laplargesd-bar_MC_YMinusi_bias_laplargesd)^2))
+MCE_JK_bias_lapsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_bias_lapsmallsd-bar_MC_YMinusi_bias_lapsmallsd)^2))
+MCE_JK_bias_cauch = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_bias_cauch-bar_MC_YMinusi_bias_cauch)^2))
+
+```
+
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation -  RELATIVE BIAS 
+## These should be <0.05, otherwise increase n_sim 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_relbias_rsquare <- MC_YMinusi_relbias_normlargesd <- MC_YMinusi_relbias_normsmallsd <- MC_YMinusi_relbias_laplargesd <- MC_YMinusi_relbias_lapsmallsd <- MC_YMinusi_relbias_cauch <- numeric(nsim)
+
+for(i in 1:nsim){
+  MC_YMinusi_relbias_rsquare[i] = (exp(sum(bias_rsquare[-i])/(nsim-1)+ log(1.1))-exp(log(1.1)))/(exp(log(1.1)))
+  MC_YMinusi_relbias_normlargesd[i] = (exp(sum(bias_normal_largesd[-i])/(nsim-1)+ log(1.1))-exp(log(1.1)))/(exp(log(1.1)))
+  MC_YMinusi_relbias_normsmallsd[i] = (exp(sum(bias_normal_smallsd[-i])/(nsim-1)+ log(1.1))-exp(log(1.1)))/(exp(log(1.1)))
+  MC_YMinusi_relbias_laplargesd[i] = (exp(sum(bias_laplace_largesd[-i])/(nsim-1)+ log(1.1))-exp(log(1.1)))/(exp(log(1.1)))
+  MC_YMinusi_relbias_lapsmallsd[i] = (exp(sum(bias_laplace_smallsd[-i])/(nsim-1)+ log(1.1))-exp(log(1.1)))/(exp(log(1.1)))
+  MC_YMinusi_relbias_cauch[i] = (exp(sum(bias_cauchy[-i])/(nsim-1)+ log(1.1))-exp(log(1.1)))/(exp(log(1.1)))
+}
+
+
+bar_MC_YMinusi_relbias_rsquare = sum(MC_YMinusi_relbias_rsquare)/nsim
+bar_MC_YMinusi_relbias_normlargesd = sum(MC_YMinusi_relbias_normlargesd)/nsim
+bar_MC_YMinusi_relbias_normsmallsd = sum(MC_YMinusi_relbias_normsmallsd)/nsim
+bar_MC_YMinusi_relbias_laplargesd = sum(MC_YMinusi_relbias_laplargesd)/nsim
+bar_MC_YMinusi_relbias_lapsmallsd = sum(MC_YMinusi_relbias_lapsmallsd)/nsim
+bar_MC_YMinusi_relbias_cauch = sum(MC_YMinusi_relbias_cauch)/nsim
+
+MCE_JK_relbias_rsquare = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_relbias_rsquare-bar_MC_YMinusi_relbias_rsquare)^2))
+MCE_JK_relbias_normlargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_relbias_normlargesd-bar_MC_YMinusi_relbias_normlargesd)^2))
+MCE_JK_relbias_normsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_relbias_normsmallsd-bar_MC_YMinusi_relbias_normsmallsd)^2))
+MCE_JK_relbias_laplargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_relbias_laplargesd-bar_MC_YMinusi_relbias_laplargesd)^2))
+MCE_JK_relbias_lapsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_relbias_lapsmallsd-bar_MC_YMinusi_relbias_lapsmallsd)^2))
+MCE_JK_relbias_cauch = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_relbias_cauch-bar_MC_YMinusi_relbias_cauch)^2))
+
+```
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - COVERAGE 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_cv_rsquare <- MC_YMinusi_cv_normlargesd <- MC_YMinusi_cv_normsmallsd <- MC_YMinusi_cv_laplargesd <- MC_YMinusi_cv_lapsmallsd <- MC_YMinusi_cv_cauch <- numeric(nsim)
+
+for(i in 1:nsim){
+  MC_YMinusi_cv_rsquare[i] = sum(coverage_rsquare[-i])/(nsim-1)
+  MC_YMinusi_cv_normlargesd[i] = sum(coverage_normal_largesd[-i])/(nsim-1)
+  MC_YMinusi_cv_normsmallsd[i] = sum(coverage_normal_smallsd[-i])/(nsim-1)
+  MC_YMinusi_cv_laplargesd[i] = sum(coverage_laplace_largesd[-i])/(nsim-1)
+  MC_YMinusi_cv_lapsmallsd[i] = sum(coverage_laplace_smallsd[-i])/(nsim-1)
+  MC_YMinusi_cv_cauch[i] = sum(coverage_cauchy[-i])/(nsim-1)
+}
+
+bar_MC_YMinusi_cv_rsquare = sum(MC_YMinusi_cv_rsquare)/nsim
+bar_MC_YMinusi_cv_normlargesd = sum(MC_YMinusi_cv_normlargesd)/nsim
+bar_MC_YMinusi_cv_normsmallsd = sum(MC_YMinusi_cv_normsmallsd)/nsim
+bar_MC_YMinusi_cv_laplargesd = sum(MC_YMinusi_cv_laplargesd)/nsim
+bar_MC_YMinusi_cv_lapsmallsd = sum(MC_YMinusi_cv_lapsmallsd)/nsim
+bar_MC_YMinusi_cv_cauch = sum(MC_YMinusi_cv_cauch)/nsim
+
+MCE_JK_cv_rsquare = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_cv_rsquare-bar_MC_YMinusi_cv_rsquare)^2))
+MCE_JK_cv_normlargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_cv_normlargesd-bar_MC_YMinusi_cv_normlargesd)^2))
+MCE_JK_cv_normsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_cv_normsmallsd-bar_MC_YMinusi_cv_normsmallsd)^2))
+MCE_JK_cv_laplargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_cv_laplargesd-bar_MC_YMinusi_cv_laplargesd)^2))
+MCE_JK_cv_lapsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_cv_lapsmallsd-bar_MC_YMinusi_cv_lapsmallsd)^2))
+MCE_JK_cv_cauch = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_cv_cauch-bar_MC_YMinusi_cv_cauch)^2))
+```
+
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - MSE 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_mse_rsquare <- MC_YMinusi_mse_normlargesd <- MC_YMinusi_mse_normsmallsd <- MC_YMinusi_mse_laplargesd <- MC_YMinusi_mse_lapsmallsd <- MC_YMinusi_mse_cauch <- numeric(nsim)
+
+for(i in 1:nsim){
+  MC_YMinusi_mse_rsquare[i] = sum(mse_rsquare[-i])/(nsim-1)
+  MC_YMinusi_mse_normlargesd[i] = sum(mse_normal_largesd[-i])/(nsim-1)
+  MC_YMinusi_mse_normsmallsd[i] = sum(mse_normal_smallsd[-i])/(nsim-1)
+  MC_YMinusi_mse_laplargesd[i] = sum(mse_laplace_largesd[-i])/(nsim-1)
+  MC_YMinusi_mse_lapsmallsd[i] = sum(mse_laplace_smallsd[-i])/(nsim-1)
+  MC_YMinusi_mse_cauch[i] = sum(mse_cauchy[-i])/(nsim-1)
+}
+
+bar_MC_YMinusi_mse_rsquare = sum(MC_YMinusi_mse_rsquare)/nsim
+bar_MC_YMinusi_mse_normlargesd = sum(MC_YMinusi_mse_normlargesd)/nsim
+bar_MC_YMinusi_mse_normsmallsd = sum(MC_YMinusi_mse_normsmallsd)/nsim
+bar_MC_YMinusi_mse_laplargesd = sum(MC_YMinusi_mse_laplargesd)/nsim
+bar_MC_YMinusi_mse_lapsmallsd = sum(MC_YMinusi_mse_lapsmallsd)/nsim
+bar_MC_YMinusi_mse_cauch = sum(MC_YMinusi_mse_cauch)/nsim
+
+MCE_JK_mse_rsquare = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_mse_rsquare-bar_MC_YMinusi_mse_rsquare)^2))
+MCE_JK_mse_normlargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_mse_normlargesd-bar_MC_YMinusi_mse_normlargesd)^2))
+MCE_JK_mse_normsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_mse_normsmallsd-bar_MC_YMinusi_mse_normsmallsd)^2))
+MCE_JK_mse_laplargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_mse_laplargesd-bar_MC_YMinusi_mse_laplargesd)^2))
+MCE_JK_mse_lapsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_mse_lapsmallsd-bar_MC_YMinusi_mse_lapsmallsd)^2))
+MCE_JK_mse_cauch = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_mse_cauch-bar_MC_YMinusi_mse_cauch)^2))
+```
+
+
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - posterior probability 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_postprob_rsquare <- MC_YMinusi_postprob_normlargesd <- MC_YMinusi_postprob_normsmallsd <- MC_YMinusi_postprob_laplargesd <- MC_YMinusi_postprob_lapsmallsd <- MC_YMinusi_postprob_cauch <- numeric(nsim)
+
+for(i in 1:nsim){
+  MC_YMinusi_postprob_rsquare[i] = sum(postprob_rsquare[-i])/(nsim-1)
+  MC_YMinusi_postprob_normlargesd[i] = sum(postprob_normal_largesd[-i])/(nsim-1)
+  MC_YMinusi_postprob_normsmallsd[i] = sum(postprob_normal_smallsd[-i])/(nsim-1)
+  MC_YMinusi_postprob_laplargesd[i] = sum(postprob_laplace_largesd[-i])/(nsim-1)
+  MC_YMinusi_postprob_lapsmallsd[i] = sum(postprob_laplace_smallsd[-i])/(nsim-1)
+  MC_YMinusi_postprob_cauch[i] = sum(postprob_cauchy[-i])/(nsim-1)
+}
+
+bar_MC_YMinusi_postprob_rsquare = sum(MC_YMinusi_postprob_rsquare)/nsim
+bar_MC_YMinusi_postprob_normlargesd = sum(MC_YMinusi_postprob_normlargesd)/nsim
+bar_MC_YMinusi_postprob_normsmallsd = sum(MC_YMinusi_postprob_normsmallsd)/nsim
+bar_MC_YMinusi_postprob_laplargesd = sum(MC_YMinusi_postprob_laplargesd)/nsim
+bar_MC_YMinusi_postprob_lapsmallsd = sum(MC_YMinusi_postprob_lapsmallsd)/nsim
+bar_MC_YMinusi_postprob_cauch = sum(MC_YMinusi_postprob_cauch)/nsim
+
+MCE_JK_postprob_rsquare = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postprob_rsquare-bar_MC_YMinusi_postprob_rsquare)^2))
+MCE_JK_postprob_normlargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postprob_normlargesd-bar_MC_YMinusi_postprob_normlargesd)^2))
+MCE_JK_postprob_normsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postprob_normsmallsd-bar_MC_YMinusi_postprob_normsmallsd)^2))
+MCE_JK_postprob_laplargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postprob_laplargesd-bar_MC_YMinusi_postprob_laplargesd)^2))
+MCE_JK_postprob_lapsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postprob_lapsmallsd-bar_MC_YMinusi_postprob_lapsmallsd)^2))
+MCE_JK_postprob_cauch = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postprob_cauch-bar_MC_YMinusi_postprob_cauch)^2))
+```
+
+
+
+## Compute jackknife-after-bootstrap Monte Carlo standard error estimation - proportion declaring superiority 
+```{r}
+nsim <- 1000
+
+MC_YMinusi_postsup_rsquare <- MC_YMinusi_postsup_normlargesd <- MC_YMinusi_postsup_normsmallsd <- MC_YMinusi_postsup_laplargesd <- MC_YMinusi_postsup_lapsmallsd <- MC_YMinusi_postsup_cauch <- numeric(nsim)
+
+for(i in 1:nsim){
+  MC_YMinusi_postsup_rsquare[i] = sum(postprob_rsquare[-i] > 0.95)/(nsim-1)
+  MC_YMinusi_postsup_normlargesd[i] = sum(postprob_normal_largesd[-i] > 0.95)/(nsim-1)
+  MC_YMinusi_postsup_normsmallsd[i] = sum(postprob_normal_smallsd[-i] > 0.95)/(nsim-1)
+  MC_YMinusi_postsup_laplargesd[i] = sum(postprob_laplace_largesd[-i] > 0.95)/(nsim-1)
+  MC_YMinusi_postsup_lapsmallsd[i] = sum(postprob_laplace_smallsd[-i] > 0.95)/(nsim-1)
+  MC_YMinusi_postsup_cauch[i] = sum(postprob_cauchy[-i] > 0.95)/(nsim-1)
+}
+
+bar_MC_YMinusi_postsup_rsquare = sum(MC_YMinusi_postsup_rsquare)/nsim
+bar_MC_YMinusi_postsup_normlargesd = sum(MC_YMinusi_postsup_normlargesd)/nsim
+bar_MC_YMinusi_postsup_normsmallsd = sum(MC_YMinusi_postsup_normsmallsd)/nsim
+bar_MC_YMinusi_postsup_laplargesd = sum(MC_YMinusi_postsup_laplargesd)/nsim
+bar_MC_YMinusi_postsup_lapsmallsd = sum(MC_YMinusi_postsup_lapsmallsd)/nsim
+bar_MC_YMinusi_postsup_cauch = sum(MC_YMinusi_postsup_cauch)/nsim
+
+MCE_JK_postsup_rsquare = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postsup_rsquare-bar_MC_YMinusi_postsup_rsquare)^2))
+MCE_JK_postsup_normlargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postsup_normlargesd-bar_MC_YMinusi_postsup_normlargesd)^2))
+MCE_JK_postsup_normsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postsup_normsmallsd-bar_MC_YMinusi_postsup_normsmallsd)^2))
+MCE_JK_postsup_laplargesd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postsup_laplargesd-bar_MC_YMinusi_postsup_laplargesd)^2))
+MCE_JK_postsup_lapsmallsd = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postsup_lapsmallsd-bar_MC_YMinusi_postsup_lapsmallsd)^2))
+MCE_JK_postsup_cauch = sqrt(((nsim-1)/nsim)*sum((MC_YMinusi_postsup_cauch-bar_MC_YMinusi_postsup_cauch)^2))
+```
+
+## Generate data frame - bias, SE, coverage, SE, MSE, SE, rel bias, SE, post prob, SE, post sup, SE, model prior, etc
+```{r}
+bias <- c(bias_rsq, bias_normlargesd, bias_normsmallsd, bias_laplargesd, bias_lapsmallsd, bias_cauch, bias_frequentist)
+
+bias_se <- c(MCE_JK_bias_rsquare, MCE_JK_bias_normlargesd, MCE_JK_bias_normsmallsd, MCE_JK_bias_laplargesd, MCE_JK_bias_lapsmallsd, MCE_JK_bias_cauch, NA)
+
+relbias <- c(relbias_rsq, relbias_normlargesd, relbias_normsmallsd, relbias_laplargesd, relbias_lapsmallsd, relbias_cauchy, relbias_frequentist)
+
+relbias_se <- c(MCE_JK_relbias_rsquare, MCE_JK_relbias_normlargesd, MCE_JK_relbias_normsmallsd, MCE_JK_relbias_laplargesd, MCE_JK_relbias_lapsmallsd, MCE_JK_relbias_cauch, NA)
+
+coverage <- c(coverage_rsq, coverage_normlargesd, coverage_normsmallsd, coverage_laplargesd, coverage_lapsmallsd, coverage_cauch, coverage_frequentist)
+
+coverage_se <- c(MCE_JK_cv_rsquare, MCE_JK_cv_normlargesd, MCE_JK_cv_normsmallsd, MCE_JK_cv_laplargesd, MCE_JK_cv_lapsmallsd, MCE_JK_cv_cauch, NA)
+
+mse <- c(mse_rsq, mse_normlargesd, mse_normsmallsd, mse_laplargesd, mse_lapsmallsd, mse_cauch, mse_frequentist)
+
+mse_se <- c(MCE_JK_mse_rsquare, MCE_JK_mse_normlargesd, MCE_JK_mse_normsmallsd, MCE_JK_mse_laplargesd, MCE_JK_mse_lapsmallsd, MCE_JK_mse_cauch, NA)
+
+postprob <- c(postprob_rsq, postprob_normlargesd, postprob_normsmallsd, postprob_laplargesd, postprob_lapsmallsd, postprob_cauch, NA)
+
+postprob_se <- c(MCE_JK_postprob_rsquare, MCE_JK_postprob_normlargesd, MCE_JK_postprob_normsmallsd, MCE_JK_postprob_laplargesd, MCE_JK_postprob_lapsmallsd, MCE_JK_postprob_cauch, NA)
+
+postsup <- c(postsup_rsq, postsup_normlargesd, postsup_normsmallsd, postsup_laplargesd, postsup_lapsmallsd, postsup_cauch, NA)
+
+postsup_se <- c(MCE_JK_postsup_rsquare, MCE_JK_postsup_normlargesd, MCE_JK_postsup_normsmallsd, MCE_JK_postsup_laplargesd, MCE_JK_postsup_lapsmallsd, MCE_JK_postsup_cauch, NA)
+
+model <- c(rep("R-square",1),rep("Normal - large SD",1),rep("Normal - small SD",1),rep("Laplace - large SD",1),rep("Laplace - small SD",1), rep("Cauchy",1), rep("Frequentist",1))
+
+category <- rep(4,7)
+
+effectsize <- rep("Small [OR = 1.10]", 7)
+
+controlprob <- rep("Uniform", 7)
+
+sampsize <- rep(500, 7)
+
+design <- rep("Fixed", 7)
+
+prior <- rep("Beta", 7)
+
+results <- data.frame(bias = bias, bias_se = bias_se, relbias = relbias, relbias_se = relbias_se, coverage = coverage, coverage_se = coverage_se, mse = mse, mse_se = mse_se, postprob = postprob, postprob_se = postprob_se, postsup = postsup, postsup_se = postsup_se, model = model, category = category, effectsize = effectsize, controlprob = controlprob, sampsize = sampsize, design = design, prior = prior)
+
+save(results, file = "results.Rdata")
+write.csv(results,file="G:/BACKUP/Chris/Project_3/noninfo_pomodel/Main_Simulations/Results/results_162.csv")
+```

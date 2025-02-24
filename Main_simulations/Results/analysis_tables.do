@@ -1,8 +1,8 @@
 ** Cleaning simulation datasets 
-cd "G:\BACKUP\Chris\Project_3\Main_simulations\Results"
+cd "G:\BACKUP\Chris\Project_3\noninfo_pomodel\Main_simulations\Results"
 
 ** Collate results for beta prior first 
-foreach num of numlist 1/144{
+foreach num of numlist 1/216{
     import delimited results_`num', clear
     save "Analysis\results_`num'.dta", replace
 }
@@ -10,7 +10,7 @@ foreach num of numlist 1/144{
 
 use "Analysis\results_1",clear
 
-foreach num of numlist 2/144{
+foreach num of numlist 2/216{
     append using "Analysis\results_`num'"
 }
 
@@ -123,7 +123,7 @@ export excel using "Analysis\Graphs\dataforgraph_beta.xlsx", replace firstrow(va
 
 ** ALPHA
 ** Collate results for alpha prior 
-foreach num of numlist 1/144{
+foreach num of numlist 1/216{
     import delimited results_`num', clear
     save "Analysis\results_`num'.dta", replace
 }
@@ -131,7 +131,7 @@ foreach num of numlist 1/144{
 
 use "Analysis\results_1",clear
 
-foreach num of numlist 2/144{
+foreach num of numlist 2/216{
     append using "Analysis\results_`num'"
 }
 
@@ -278,6 +278,26 @@ foreach num of numlist 131/144{
     save "Analysis\results_`num'_sens.dta", replace
 }
 
+foreach num of numlist 184/187{
+    import delimited results_`num'_sens, clear
+    save "Analysis\results_`num'_sens.dta", replace
+}
+
+foreach num of numlist 193/193{
+    import delimited results_`num'_sens, clear
+    save "Analysis\results_`num'_sens.dta", replace
+}
+
+foreach num of numlist 198/198{
+    import delimited results_`num'_sens, clear
+    save "Analysis\results_`num'_sens.dta", replace
+}
+
+foreach num of numlist 212/216{
+    import delimited results_`num'_sens, clear
+    save "Analysis\results_`num'_sens.dta", replace
+}
+
 use "Analysis\results_100_sens.dta", clear 
 
 foreach var of varlist bias bias_se relbias relbias_se coverage coverage_se mse mse_se postprob postprob_se postsup postsup_se{
@@ -357,6 +377,21 @@ foreach num of numlist 131/144{
 }
 
 
+foreach num of numlist 184/187{
+    append using "Analysis\results_`num'_sens"  
+}
+
+foreach num of numlist 193/193{
+    append using "Analysis\results_`num'_sens"  
+}
+
+foreach num of numlist 198/198{
+    append using "Analysis\results_`num'_sens"  
+}
+
+foreach num of numlist 212/216{
+    append using "Analysis\results_`num'_sens"  
+}
 
 ** Drop alphas and do this separately later 
 drop if prior == "Beta"
@@ -365,7 +400,7 @@ drop if prior == "Beta"
 // Basic checks 
 // Performance measures 
 summ bias, d
-assert bias != .
+assert bias != . // Some missing because ALL divergent transitions 
 
 summ coverage, d
 assert coverage != .
